@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>CircleG</title>
+    <script type="text/javascript">
+
+        var _beginTime;
+
+        var _desc1 = "Fx Fy 是 F 的 x分量 y分量 。 F 是 绝对值， Fx Fy 的 正负号 表示 方向 。";
+
+        function btnCalculate_Click() {
+
+            writeMsg("spanStatus", "计算中 ……");
+
+            _beginTime = new Date();
+
+            window.setTimeout(Calculate, 0);
+        }
+
+        function Calculate() {
+
+            var r = parseFloat(document.getElementById("txtR").value);
+            var p = parseFloat(document.getElementById("txtP").value);
+
+            var xb = parseFloat(document.getElementById("txtBx").value);
+            var yb = parseFloat(document.getElementById("txtBy").value);
+            var m = parseFloat(document.getElementById("txtBm").value);
+
+            var dxCount = parseInt(document.getElementById("txtDxCount").value);
+            var dyCount = parseInt(document.getElementById("txtDyCount").value);
+
+            var G = parseFloat(document.getElementById("txtG").value);
+
+
+            if (isNaN(r) || r <= 0)
+            {
+                alert("实心圆 A 半径 应填写 正数 。");
+                return;
+            }
+
+            if (isNaN(p) || p <= 0)
+            {
+                alert("实心圆 A 密度 应填写 正数 。");
+                return;
+            }
+
+            if (isNaN(xb))
+            {
+                alert("质点 B 坐标 x 应填写 数字 。");
+                return;
+            }
+
+            if (isNaN(yb))
+            {
+                alert("质点 B 坐标 y 应填写 数字 。");
+                return;
+            }
+
+            if (isNaN(m) || m <= 0)
+            {
+                alert("质点 B 质量 应填写 正数 。");
+                return;
+            }
+
+            if (isNaN(dxCount) || dxCount <= 0)
+            {
+                alert("x 轴 直径 切分为多少个 dx 应填写 正整数 。");
+                return;
+            }
+
+            if (isNaN(dyCount) || dyCount <= 0)
+            {
+                alert("y 轴 直径 切分为多少个 dy 应填写 正整数 。");
+                return;
+            }
+
+            if (isNaN(G) || G <= 0)
+            {
+                alert("万有引力常量 G 应填写 正数 。");
+                return;
+            }
+
+            var dx = 2 * r / dxCount;
+            var dy = 2 * r / dyCount;
+
+            var fx = 0;
+            var fy = 0;
+
+            for (let i = 1; i <= dxCount; i++) {
+
+                let x = - r + dx * i;
+
+                let Y = Math.sqrt(Math.pow(r, 2) - Math.pow(x, 2));
+
+                for (let y = -Y + dy; y <= Y; y += dy) {
+
+                    let dM = p * dx * dy;
+
+                    let l = Math.sqrt(Math.pow((x - xb), 2) + Math.pow((y - yb), 2));
+
+                    let df = G * dM * m / Math.pow(l, 2);
+
+                    
+                    let dfx = df * (x - xb) / l;
+                    let dfy = df * (y - yb) / l;
+
+                    fx += dfx;
+                    fy += dfy;
+
+                }
+            }
+
+            var f = Math.sqrt(fx * fx + fy * fy);
+
+            writeMsg("spanStatus", "计算完成 。 耗时 " + ((new Date().getTime() - _beginTime)/1000) + "秒 。" );
+            writeMsg("spanResult1", "实心圆 A 对 质点 B 的 引力 F = " + f + " 牛 ， " + " Fx = " + fx + " 牛 ， " + " Fy = " + fy + " 牛 。 " + _desc1);
+
+            var M = 3.14 * r * r * p;
+            var lo = Math.sqrt(xb * xb + yb * yb);
+            var fo = G * M * m / (lo * lo);
+
+            writeMsg("spanResult2", "把 实心圆 A 看成圆心处同样质量的质点 对 质点 B 的 引力 Fo = " + fo + " 牛 。 ");
+        }
+
+        function writeMsg(id, msg) {
+
+            var span = document.getElementById(id);
+
+            span.innerText = msg;
+        }
+    </script>
+</head>
+<body>
+    本程序 说明 见 《在引力问题中， 实心圆 是否可以认为是一个 质点》 <a href="https://www.cnblogs.com/KSongKing/p/12013584.html" target="_blank">https://www.cnblogs.com/KSongKing/p/12013584.html</a><br />
+    本程序 计算 二维平面上 实心圆 A 对 质点 B 的 引力， 以及 把 实心圆 A 看成圆心处同样质量的质点 对 质点 B 的 引力 。<br /><br />
+    以 实心圆 圆心 O 为 原点 建立 坐标系 。<br /><br />
+    * 注意， 质点 B 不要 贴近 实心圆 A 或者 位于 实心圆 A 内部， 这样可能导致 微元 和 质点 B 之间的距离为 0 而导致计算错误， 或者 微元 和 质点 B 之间的距离太小导致引力变化剧烈而导致计算结果不准确 。<br /><br />
+    实心圆 A 半径 ： <input id="txtR" value="100" /> 米<br />
+    实心圆 A 密度 ： <input id="txtP" value="1" /> 千克/米²<br />
+    质点 B 坐标 x ： <input id="txtBx" value="200" /> 米 &nbsp;&nbsp;&nbsp;&nbsp;y ： <input id="txtBy" value="50" /> 米<br />
+    质点 B 质量 m ： <input id="txtBm" value="10" /> 千克<br />
+    x 轴 直径 切分为多少个 dx ： <input id="txtDxCount" value="1000" /> &nbsp;&nbsp;&nbsp;&nbsp;y 轴 直径 切分为多少个 dy ： <input id="txtDyCount" value="1000" /><br />
+    万有引力常量 G： <input id="txtG" value="1" /> 牛 * 米平方 / 千克平方<br /><br />
+    <input type="button" value="计算" onclick="btnCalculate_Click();" style="width: 100px" />
+    <span id="spanStatus"></span><br />
+    <span id="spanResult1"></span><br />
+    <span id="spanResult2"></span><br />
+</body>
+</html>
